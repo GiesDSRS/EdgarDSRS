@@ -197,5 +197,46 @@ patterns_to_remove = [
         r"[M]{10,}",            # sequences with repeated characters
         r"end$",                # lines that containing 'end'
         r"begin 644",           # encoding artifacts like 'begin 644'
-        r"\b[A-Za-z0-9]{30,}\b" # alphanumeric characters
+        r"\b[A-Za-z0-9]{30,}\b", # alphanumeric characters
+        r"\*+",                 # symbols like * or ** (one or more * symbols)
     ]
+
+# Statement terms to identify 
+statement_terms = [
+    "PERIOD-TYPE",
+    "FISCAL-YEAR-END",
+    "PERIOD-END",
+    "EXCHANGE-RATE",
+    "CASH",
+    "SECURITIES",
+    "RECEIVABLES",
+    "ALLOWANCES",
+    "INVENTORY",
+    "CURRENT-ASSETS",
+    "PP&E",
+    "DEPRECIATION",
+    "TOTAL-ASSETS",
+    "CURRENT-LIABILITIES",
+    "BONDS",
+    "PREFERRED-MANDATORY",
+    "PREFERRED",
+    "COMMON",
+    "OTHER-SE",
+    "TOTAL-LIABILITY-AND-EQUITY",
+    "SALES",
+    "TOTAL-REVENUES",
+    "CGS",
+    "TOTAL-COSTS",
+    "OTHER-EXPENSES",
+    "LOSS-PROVISION",
+    "INTEREST-EXPENSE",
+    "INCOME-PRETAX",
+    "INCOME-TAX",
+    "INCOME-CONTINUING",
+    "DISCONTINUED",
+    "EXTRAORDINARY",
+    "CHANGES",
+    "NET-INCOME",
+    "EPS-PRIMARY",
+    "EPS-DILUTED"
+]
