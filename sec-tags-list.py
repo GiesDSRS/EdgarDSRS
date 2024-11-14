@@ -187,3 +187,15 @@ financial_table_types = [
     'segment-information',
     'notes-to-financial-statements',
 ]
+
+
+
+
+
+patterns_to_remove = [
+        r"[A-Za-z0-9+/]{40,}",  # long base64-like sequences
+        r"[M]{10,}",            # sequences with repeated characters
+        r"end$",                # lines that containing 'end'
+        r"begin 644",           # encoding artifacts like 'begin 644'
+        r"\b[A-Za-z0-9]{30,}\b" # alphanumeric characters
+    ]
