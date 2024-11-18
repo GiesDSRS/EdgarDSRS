@@ -33,23 +33,28 @@ class EdgarAnalyzer:
 
     @staticmethod
     def remove_gibberish(text):
-        # Remove sequences with high special character density
         text = re.sub(r'[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}', '', text)
-        
-        # Remove lines that are mostly numbers or symbols
         text = re.sub(r'^[^a-zA-Z\s]*$', '', text, flags=re.MULTILINE)
-        
-        # Remove base64 encoded text patterns
         text = re.sub(r'(begin [0-9]{3} [^\n]+\n(.*\n)+end)', '', text, flags=re.MULTILINE)
-        
-        # Remove lines with too many non-alphanumeric characters
         text = re.sub(r'^[^\w\s]{10,}$', '', text, flags=re.MULTILINE)
-        
         return text
 
     @staticmethod
+    def extract_and_format_tables(soup):
+        tables = soup.find_all("table")
+        formatted_tables = []
+        for table in tables:
+            rows = table.find_all("tr")
+            table_text = []
+            for row in rows:
+                cells = row.find_all(["td", "th"])
+                row_text = [cell.get_text(strip=True) for cell in cells]
+                table_text.append("\t".join(row_text))
+            formatted_tables.append("\n".join(table_text))
+        return "\n\n".join(formatted_tables)
+
+    @staticmethod
     def clean_html_content(html_content):
-        # Try different parsers
         for parser in ["html.parser", "lxml", "html5lib"]:
             try:
                 soup = BeautifulSoup(html_content, parser)
@@ -58,62 +63,47 @@ class EdgarAnalyzer:
                 print(f"{parser} failed: {e}")
                 if parser == "html5lib":
                     raise Exception("All HTML parsers failed")
+        
+        # Extract tables before unwrapping tags
+        tables = EdgarAnalyzer.extract_and_format_tables(soup)
 
-        # Remove all tags while keeping their content
         for tag in soup.find_all(True):
             tag.unwrap()
 
-        # Get text and normalize
         text = soup.get_text(separator=' ')
         text = unicodedata.normalize('NFKD', text)
-
-        # Remove HTML remnants
         text = re.sub(r'<.*?>', '', text)
         text = re.sub(r'&[a-zA-Z0-9#]+;', ' ', text)
 
-        # Clean the text
         text = EdgarAnalyzer.remove_gibberish(text)
         text = EdgarAnalyzer.clean_noisy_text(text)
         text = ' '.join(text.split())
 
-        return text
+        return text, tables
 
-def process_file(input_path, output_path=None):
-    """
-    Process a single HTML file and optionally save the cleaned output
-    
-    Args:
-        input_path: Path to input HTML file
-        output_path: Optional path to save cleaned text
-    
-    Returns:
-        Cleaned text content
-    """
-    try:
-        with open(input_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-        
-        cleaned_text = EdgarAnalyzer.clean_html_content(content)
-        
-        if output_path:
+    def process_html_file(self, input_path):
+        try:
+            with open(input_path, 'r', encoding='utf-8') as file:
+                content = file.read()
+
+            cleaned_text, tables = self.clean_html_content(content)
+
+            base_name = os.path.basename(input_path)
+            dir_name = os.path.dirname(input_path)
+            output_file_name = os.path.splitext(base_name)[0] + "_cleaned.txt"
+            output_path = os.path.join(dir_name, output_file_name)
+
             with open(output_path, 'w', encoding='utf-8') as file:
                 file.write(cleaned_text)
-            print(f"Cleaned text saved to: {output_path}")
-            
-        return cleaned_text
-        
-    except Exception as e:
-        print(f"Error processing file: {str(e)}")
-        return None
+                if tables:
+                    file.write("\n\n--- Extracted Tables ---\n\n")
+                    file.write(tables)
 
-# Example usage
-if __name__ == "__main__":
-    # Replace with your input file path
-    input_file = "/home/jovyan/datahub/1003078-MSC INDUSTRIAL DIRECT CO INC-10-K-2021-10-20.txt"
-    output_file = "cleaned_output.txt"
-    
-    cleaned_text = process_file(input_file, output_file)
-    
-    if cleaned_text:
-        print("\nFirst 500 characters of cleaned text:")
-        print(cleaned_text[:500])
+            print(f"Cleaned text and tables saved to: {output_path}")
+            return output_path
+        
+        except Exception as e:
+            print(f"Error processing file: {str(e)}")
+            return None
+
+
