@@ -11,7 +11,6 @@ import os
 import re
 import unicodedata
 from bs4 import BeautifulSoup
-import xml.etree.ElementTree as ET
 
 class EdgarAnalyzer:
     @staticmethod
@@ -68,87 +67,7 @@ class EdgarAnalyzer:
         
         # Join all tables with double newlines
         return "\n\n".join(formatted_tables)
-    
-    @staticmethod
-    def detect_file_format(content):
-        """
-        Detect whether the file is HTML or XBRL (XML).
-        """
-        if content.strip().startswith("<?xml"):
-            return "XBRL"
-        elif "<html" in content.lower():
-            return "HTML"
-        else:
-            return "UNKNOWN"
-        
-    @staticmethod
-    def process_xbrl(root):
-        """
-        Processes XBRL content to extract meaningful data and tables.
-        :param root: XML root element of the XBRL document.
-        :return: Extracted text and structured tables.
-        """
-        xbrl_data = []  # To store structured XBRL data
-        xbrl_text = []  # To store plain text representation
 
-        # Extract contexts and units
-        contexts = EdgarAnalyzer.extract_contexts(root)
-        units = EdgarAnalyzer.extract_units(root)
-
-        # Extract facts and group into rows
-        for fact in root.iter():
-            if fact.tag.startswith("{http://www.xbrl.org/2003/instance}"):
-                tag = fact.tag.split("}")[-1]
-                context_ref = fact.get("contextRef")
-                unit_ref = fact.get("unitRef")
-                value = fact.text
-
-                if context_ref in contexts:
-                    xbrl_data.append({
-                        "tag": tag,
-                        "value": value.strip() if value else None,
-                        "context": contexts[context_ref],
-                        "unit": units.get(unit_ref, None)
-                    })
-                    xbrl_text.append(f"{tag}: {value.strip() if value else ''}")
-
-        # Combine XBRL text into a single string
-        xbrl_text_combined = ' '.join(xbrl_text)
-        return xbrl_text_combined, xbrl_data
-
-    @staticmethod
-    def extract_contexts(root):
-        """
-        Extracts context information from an XBRL document.
-        :param root: XML root element of the XBRL document.
-        :return: Dictionary of context references.
-        """
-        contexts = {}
-        for context in root.findall(".//{http://www.xbrl.org/2003/instance}context"):
-            context_id = context.get("id")
-            period = context.find(".//{http://www.xbrl.org/2003/instance}period")
-            start_date = period.find("{http://www.xbrl.org/2003/instance}startDate")
-            end_date = period.find("{http://www.xbrl.org/2003/instance}endDate")
-            contexts[context_id] = {
-                "startDate": start_date.text if start_date is not None else None,
-                "endDate": end_date.text if end_date is not None else None
-            }
-        return contexts
-
-    @staticmethod
-    def extract_units(root):
-        """
-        Extracts unit information from an XBRL document.
-        :param root: XML root element of the XBRL document.
-        :return: Dictionary of unit references.
-        """
-        units = {}
-        for unit in root.findall(".//{http://www.xbrl.org/2003/instance}unit"):
-            unit_id = unit.get("id")
-            measure = unit.find("{http://www.xbrl.org/2003/instance}measure")
-            units[unit_id] = measure.text if measure is not None else None
-        return units
-    
     @staticmethod
     def clean_html_content(html_content):
         for parser in ["html.parser", "lxml", "html5lib"]:
@@ -164,7 +83,7 @@ class EdgarAnalyzer:
         tables = EdgarAnalyzer.extract_and_format_tables(soup)
 
         for tag in soup.find_all(True):
-            # tag.insert_after(' ')
+            tag.insert_after(' ')
             tag.unwrap()
 
         text = soup.get_text(separator=' ')
@@ -172,29 +91,17 @@ class EdgarAnalyzer:
         text = re.sub(r'<.*?>', ' ', text)
         text = re.sub(r'&[a-zA-Z0-9#]+;', ' ', text)
 
-
         text = EdgarAnalyzer.remove_gibberish(text)
         text = EdgarAnalyzer.clean_noisy_text(text)
         text = ' '.join(text.split())
-        
+
         return text, tables
-        # return text
 
     def process_html_file(self, input_path):
         try:
             with open(input_path, 'r', encoding='utf-8') as file:
                 content = file.read()
 
-            # Detect file format
-            format = self.detect_file_format(content)
-            if format == "HTML":
-                cleaned_text, tables = self.clean_html_content(content)
-            elif format == "XBRL":
-                root = ET.fromstring(content)
-                cleaned_text, tables = self.process_xbrl(root)
-            else:
-                raise ValueError("Unsupported file format")
-            
             cleaned_text, tables = self.clean_html_content(content)
 
             base_name = os.path.basename(input_path)
@@ -214,4 +121,3 @@ class EdgarAnalyzer:
         except Exception as e:
             print(f"Error processing file: {str(e)}")
             return None
-
