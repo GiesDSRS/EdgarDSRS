@@ -11,7 +11,10 @@ import os
 import re
 import unicodedata
 from bs4 import BeautifulSoup
+
 import xml.etree.ElementTree as ET
+
+
 
 class EdgarAnalyzer:
     @staticmethod
@@ -34,14 +37,17 @@ class EdgarAnalyzer:
 
     @staticmethod
     def remove_gibberish(text):
+
         text = re.sub(r'[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}', ' ', text)
         text = re.sub(r'^[^a-zA-Z\s]*$', ' ', text, flags=re.MULTILINE)
         text = re.sub(r'(begin [0-9]{3} [^\n]+\n(.*\n)+end)', ' ', text, flags=re.MULTILINE)
         text = re.sub(r'^[^\w\s]{10,}$', ' ', text, flags=re.MULTILINE)
+
         return text
 
     @staticmethod
     def extract_and_format_tables(soup):
+
         # Find all table elements
         tables = soup.find_all("table")
         formatted_tables = []
@@ -149,26 +155,8 @@ class EdgarAnalyzer:
             units[unit_id] = measure.text if measure is not None else None
         return units
     
-    @staticmethod
-    def clean_html_content(html_content):
-        for parser in ["html.parser", "lxml", "html5lib"]:
-            try:
-                soup = BeautifulSoup(html_content, parser)
-                break
-            except Exception as e:
-                print(f"{parser} failed: {e}")
-                if parser == "html5lib":
-                    raise Exception("All HTML parsers failed")
-        
-        # Extract tables before unwrapping tags
-        tables = EdgarAnalyzer.extract_and_format_tables(soup)
 
-        for tag in soup.find_all(True):
-            # tag.insert_after(' ')
-            tag.unwrap()
 
-        text = soup.get_text(separator=' ')
-        text = unicodedata.normalize('NFKD', text)
         text = re.sub(r'<.*?>', ' ', text)
         text = re.sub(r'&[a-zA-Z0-9#]+;', ' ', text)
 
@@ -214,3 +202,4 @@ class EdgarAnalyzer:
         except Exception as e:
             print(f"Error processing file: {str(e)}")
             return None
+
