@@ -214,4 +214,3 @@ class EdgarAnalyzer:
         except Exception as e:
             print(f"Error processing file: {str(e)}")
             return None
-
