@@ -32,14 +32,11 @@ Basic usage to clean a 10-K HTML file:
 ```python
 from edgartool import EdgarAnalyzer
 
-# Read and clean HTML file
-with open('path/to/10k.html', 'r', encoding='utf-8') as file:
-    html_content = file.read()
-cleaned_text = EdgarAnalyzer.clean_html_content(html_content)
+analyzer = EdgarAnalyzer()
 
-# Save cleaned output
-with open('output.txt', 'w', encoding='utf-8') as file:
-    file.write(cleaned_text)
+# Cleaning the file
+input_file = "your_10k_file.html"
+cleaned_file = analyzer.process_html_file(input_file)
 ```
 
 ## Cleaning Process
