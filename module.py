@@ -1,12 +1,3 @@
-"""
-Goal: Read in raw Edgar files, downloadable from the
-...
-
-module.py is an auxiliary file that defines the following classes
-(1) EdgarAnalyzer
-
-See Example.py for implementation of the EdgarAnalyzer functions
-"""
 import os
 import re
 import unicodedata
@@ -62,11 +53,18 @@ class EdgarAnalyzer:
         # Get text content
         text = soup.get_text(separator=' ')
         text = unicodedata.normalize('NFKD', text)
-        text = re.sub(
-            r'(<.*?>)|(&[a-zA-Z0-9#]+;)|[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}|\s+', 
-            ' ', 
-            text
-        )
+
+        text = re.sub(r'(<.*?>)'                             
+                    r'|(&[a-zA-Z0-9#]+;)'                  
+                    r'|[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}'  
+                    r'|^\s*[^a-zA-Z\s]*$'                  
+                    r'|begin [0-9]{3} [^\n]+\n(.*\n)+?end' 
+                    r'|^[^\w\s]{10,}$'                     
+                    r'|\s+',                               
+                    ' ', 
+                    text, 
+                    flags=re.MULTILINE)
+
         text = self.clean_noisy_text(text)
         
         return text, formatted_tables
@@ -108,3 +106,4 @@ class EdgarAnalyzer:
         except Exception as e:
             self.logger.error(f"Error processing file: {str(e)}")
             return None
+
