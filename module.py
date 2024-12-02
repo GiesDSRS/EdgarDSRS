@@ -14,8 +14,8 @@ class EdgarAnalyzer:
             return ""
         
         def is_noisy(word):
-            # Allow specific patterns like "0000907471-18-000139" or "0000907471-18-000139.txt"
-            if re.match(r'^\d{10}-\d{2}-\d{6}(\.txt)?$', word):
+            # Allow specific patterns like "0000907471-18-000139", "0000907471-18-000139.txt", and "0001000015-98-000009.hdr.sgml"
+            if re.match(r'^\d{10}-\d{2}-\d{6}(\.txt|\.hdr\.sgml)?$', word):
                 return False
             
             # Check for noisy conditions
