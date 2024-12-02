@@ -13,13 +13,20 @@ class EdgarAnalyzer:
         if not text:
             return ""
         
-        cleaned_words = []
-        for word in text.split():
-            if len(word) > 15 and (re.search(r'[A-Z].*[a-z].*\d', word) or 
-                                  re.search(r'[^A-Za-z0-9]', word)):
-                continue
-            cleaned_words.append(word)
+        def is_noisy(word):
+            # Allow specific patterns like "0000907471-18-000139" or "0000907471-18-000139.txt"
+            if re.match(r'^\d{10}-\d{2}-\d{6}(\.txt)?$', word):
+                return False
             
+            # Check for noisy conditions
+            return len(word) > 15 and (
+                re.search(r'[A-Z].*[a-z].*\d', word) or 
+                re.search(r'[^A-Za-z0-9]', word)
+            )
+        
+        # Filter out noisy words
+        cleaned_words = [word for word in text.split() if not is_noisy(word)]
+        
         return ' '.join(cleaned_words)
 
     def clean_html_content(self, html_content):
@@ -53,18 +60,22 @@ class EdgarAnalyzer:
         # Get text content
         text = soup.get_text(separator=' ')
         text = unicodedata.normalize('NFKD', text)
-
-        text = re.sub(r'(<.*?>)'                             
-                    r'|(&[a-zA-Z0-9#]+;)'                  
-                    r'|[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}'  
-                    r'|^\s*[^a-zA-Z\s]*$'                  
-                    r'|begin [0-9]{3} [^\n]+\n(.*\n)+?end' 
-                    r'|^[^\w\s]{10,}$'                     
-                    r'|\s+',                               
+        text = re.sub(r'(<.*?>)'                             # Matches HTML tags
+                    r'|(&[a-zA-Z0-9#]+;)'                  # Matches HTML entities
+                    r'|[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}'  # Matches sequences of 5+ special characters
+                    r'|^\s*[^a-zA-Z\s]*$'                  # Matches lines with only non-alphabetic content
+                    r'|begin [0-9]{3} [^\n]+\n(.*\n)+?end' # Matches "begin 644 ... end" blocks
+                    r'|^[^\w\s]{10,}$'                     # Matches lines with 10+ consecutive special characters
+                    r'|\s+',                               # Matches multiple spaces
                     ' ', 
                     text, 
                     flags=re.MULTILINE)
 
+    #     text = re.sub(
+    # r'(<.*?>)|(&[a-zA-Z0-9#]+;)|[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}|\s+', 
+    # ' ', 
+    # text, 
+    # flags=re.MULTILINE)
         text = self.clean_noisy_text(text)
         
         return text, formatted_tables
@@ -106,4 +117,3 @@ class EdgarAnalyzer:
         except Exception as e:
             self.logger.error(f"Error processing file: {str(e)}")
             return None
-
