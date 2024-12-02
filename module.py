@@ -53,6 +53,7 @@ class EdgarAnalyzer:
         # Get text content
         text = soup.get_text(separator=' ')
         text = unicodedata.normalize('NFKD', text)
+
         text = re.sub(r'(<.*?>)'                             
                     r'|(&[a-zA-Z0-9#]+;)'                  
                     r'|[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}'  
@@ -105,3 +106,4 @@ class EdgarAnalyzer:
         except Exception as e:
             self.logger.error(f"Error processing file: {str(e)}")
             return None
+
