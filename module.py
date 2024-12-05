@@ -103,24 +103,24 @@ class EdgarAnalyzer:
         # Comprehensive cleaning of formatting and metadata tags
         text = re.sub(
             r'(?i)('
-            r'</?[a-z][^>]*>|'  # HTML tags
-            r'&[a-z0-9#]+;|'    # HTML entities
-            r'new\s+normal;|'    # Style metadata
-            r'/p\s*p\s*|'       # Paragraph markers
-            r'nbsp;|'           # Non-breaking spaces
-            r'\s*style="[^"]*"|'  # Style attributes
-            r'\s*class="[^"]*"|'  # Class attributes
-            r'\s*align="[^"]*"|'  # Alignment attributes
-            r'\s*valign="[^"]*"|'  # Vertical alignment attributes
-            r'\s*width:"[^"]*"|'   # Width specifications
-            r'\s*border="[^"]*"|'  # Border specifications
-            r'\s*cellspacing="[^"]*"|'  # Cell spacing
-            r'\s*cellpadding="[^"]*"|'  # Cell padding
-            r'[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}|'  # Multiple special characters
-            r'^\s*[^a-zA-Z\s]*$|'  # Lines with only non-alphabetic content
-            r'begin [0-9]{3} [^\n]+\n(.*\n)+?end|'  # Begin-end blocks
-            r'^[^\w\s]{10,}$|'  # Lines with 10+ consecutive special characters
-            r'\s+'  # Multiple spaces
+            r'</?[a-z][^>]*>|'  
+            r'&[a-z0-9#]+;|'    
+            r'new\s+normal;|'    
+            r'/p\s*p\s*|'       
+            r'nbsp;|'           
+            r'\s*style="[^"]*"|'  
+            r'\s*class="[^"]*"|'  
+            r'\s*align="[^"]*"|'  
+            r'\s*valign="[^"]*"|'  
+            r'\s*width:"[^"]*"|'   
+            r'\s*border="[^"]*"|'  
+            r'\s*cellspacing="[^"]*"|'  
+            r'\s*cellpadding="[^"]*"|' 
+            r'[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}|'  
+            r'^\s*[^a-zA-Z\s]*$|'  
+            r'begin [0-9]{3} [^\n]+\n(.*\n)+?end|'  
+            r'^[^\w\s]{10,}$|'  
+            r'\s+'  
             r')',
             ' ',
             text,
@@ -131,13 +131,11 @@ class EdgarAnalyzer:
         text = self.clean_noisy_text(text)
         
         # Additional cleaning
-        text = re.sub(r'/p|/td|/tr|font|/font|/b|', '', text)  # Remove /p, /td, font, and /font
-        text = re.sub(r'\b(p|td|tr)\b', '', text)  # Remove " p " or " td " surrounded by spaces
-        text = re.sub(r'#\d+;', '', text)  # Remove entities like #160; or #8212;
-
-        # Additional cleaning
-        text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces with single space
-        text = text.strip()  # Remove leading/trailing whitespace
+        text = re.sub(r'/p|/td|/tr|font|/font|/b|', '', text)  
+        text = re.sub(r'\b(p|td|tr)\b', '', text)  
+        text = re.sub(r'#\d+;', '', text)  
+        text = re.sub(r'\s+', ' ', text)  
+        text = text.strip()  
 
 
         return text, formatted_tables
