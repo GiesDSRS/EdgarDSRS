@@ -14,20 +14,68 @@ class EdgarAnalyzer:
             return ""
         
         def is_noisy(word):
-            # Allow specific patterns like "0000907471-18-000139", "0000907471-18-000139.txt", and "0001000015-98-000009.hdr.sgml"
             if re.match(r'^\d{10}-\d{2}-\d{6}(\.txt|\.hdr\.sgml)?$', word):
                 return False
             
-            # Check for noisy conditions
             return len(word) > 15 and (
                 re.search(r'[A-Z].*[a-z].*\d', word) or 
                 re.search(r'[^A-Za-z0-9]', word)
             )
         
-        # Filter out noisy words
         cleaned_words = [word for word in text.split() if not is_noisy(word)]
-        
         return ' '.join(cleaned_words)
+
+    @staticmethod
+    def extract_and_format_tables(soup):
+        if not soup:
+            return ""
+        
+        def get_text_from_element(element):
+            """Extract text from any table-related element"""
+            return " ".join(element.get_text(separator=' ', strip=True).split())
+        
+        tables = []
+        
+        # Find all possible table-related tags
+        table_elements = soup.find_all(['table', 'TABLE'])
+        
+        for table in table_elements:
+            table_text = []
+            
+            # Get all possible table content elements in one go
+            content_elements = table.find_all(['td', 'TD', 'th', 'TH', 
+                                             'tr', 'TR',
+                                             'thead', 'THEAD',
+                                             'tbody', 'TBODY',
+                                             'tfoot', 'TFOOT',
+                                             'ix:nonnumeric', 'ix:nonfraction', 'ix:fraction'])
+            
+            current_row = []
+            
+            for element in content_elements:
+                tag_name = element.name.lower()
+                
+                # If it's a row tag, start a new row
+                if tag_name in ['tr']:
+                    if current_row:
+                        table_text.append('\t'.join(filter(None, current_row)))
+                    current_row = []
+                
+                # If it's a cell tag or XBRL tag, add its content
+                elif tag_name in ['td', 'th'] or tag_name.startswith('ix:'):
+                    text = get_text_from_element(element)
+                    if text:
+                        current_row.append(text)
+            
+            # Add the last row if exists
+            if current_row:
+                table_text.append('\t'.join(filter(None, current_row)))
+            
+            # Add non-empty tables
+            if table_text:
+                tables.append('\n'.join(table_text))
+        
+        return '\n\n'.join(tables)
 
     def clean_html_content(self, html_content):
         if not html_content:
@@ -42,42 +90,56 @@ class EdgarAnalyzer:
             return "", ""
 
         # Extract tables first
-        tables = []
-        for table in soup.find_all('table'):
-            table_text = []
-            for row in table.find_all('tr'):
-                cells = [cell.get_text(strip=True) for cell in row.find_all(['td', 'th'])]
-                if any(cells):
-                    table_text.append('\t'.join(cells))
-            if table_text:
-                tables.append('\n'.join(table_text))
-        formatted_tables = '\n\n'.join(tables)
+        formatted_tables = self.extract_and_format_tables(soup)
 
         # Remove unwanted elements
-        for element in soup(['script', 'style', 'meta', 'link', 'head']):
+        for element in soup(['script', 'style', 'meta', 'link', 'head', 'userStyle']):
             element.decompose()
 
         # Get text content
         text = soup.get_text(separator=' ')
         text = unicodedata.normalize('NFKD', text)
-        text = re.sub(r'(<.*?>)'                             # Matches HTML tags
-                    r'|(&[a-zA-Z0-9#]+;)'                  # Matches HTML entities
-                    r'|[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}'  # Matches sequences of 5+ special characters
-                    r'|^\s*[^a-zA-Z\s]*$'                  # Matches lines with only non-alphabetic content
-                    r'|begin [0-9]{3} [^\n]+\n(.*\n)+?end' # Matches "begin 644 ... end" blocks
-                    r'|^[^\w\s]{10,}$'                     # Matches lines with 10+ consecutive special characters
-                    r'|\s+',                               # Matches multiple spaces
-                    ' ', 
-                    text, 
-                    flags=re.MULTILINE)
 
-    #     text = re.sub(
-    # r'(<.*?>)|(&[a-zA-Z0-9#]+;)|[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}|\s+', 
-    # ' ', 
-    # text, 
-    # flags=re.MULTILINE)
+        # Comprehensive cleaning of formatting and metadata tags
+        text = re.sub(
+            r'(?i)('
+            r'</?[a-z][^>]*>|'  # HTML tags
+            r'&[a-z0-9#]+;|'    # HTML entities
+            r'new\s+normal;|'    # Style metadata
+            r'/p\s*p\s*|'       # Paragraph markers
+            r'nbsp;|'           # Non-breaking spaces
+            r'\s*style="[^"]*"|'  # Style attributes
+            r'\s*class="[^"]*"|'  # Class attributes
+            r'\s*align="[^"]*"|'  # Alignment attributes
+            r'\s*valign="[^"]*"|'  # Vertical alignment attributes
+            r'\s*width:"[^"]*"|'   # Width specifications
+            r'\s*border="[^"]*"|'  # Border specifications
+            r'\s*cellspacing="[^"]*"|'  # Cell spacing
+            r'\s*cellpadding="[^"]*"|'  # Cell padding
+            r'[!@#$%^&*()_+={}\[\]:;"\'<>,.?/\\|`~\-]{5,}|'  # Multiple special characters
+            r'^\s*[^a-zA-Z\s]*$|'  # Lines with only non-alphabetic content
+            r'begin [0-9]{3} [^\n]+\n(.*\n)+?end|'  # Begin-end blocks
+            r'^[^\w\s]{10,}$|'  # Lines with 10+ consecutive special characters
+            r'\s+'  # Multiple spaces
+            r')',
+            ' ',
+            text,
+            flags=re.MULTILINE
+        )
+
+        # Clean noisy text
         text = self.clean_noisy_text(text)
         
+        # Additional cleaning
+        text = re.sub(r'/p|/td|/tr|font|/font|/b|', '', text)  # Remove /p, /td, font, and /font
+        text = re.sub(r'\b(p|td|tr)\b', '', text)  # Remove " p " or " td " surrounded by spaces
+        text = re.sub(r'#\d+;', '', text)  # Remove entities like #160; or #8212;
+
+        # Additional cleaning
+        text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces with single space
+        text = text.strip()  # Remove leading/trailing whitespace
+
+
         return text, formatted_tables
 
     def process_html_file(self, input_path, output_dir=None):
