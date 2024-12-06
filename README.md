@@ -1,7 +1,7 @@
 # EDGARTOOL: Tool for SEC 10-k files
 ## Description:
 
-EDGARTOOL is a Python library designed to clean and process SEC EDGAR 10-K filing HTML files. It removes unnecessary HTML elements, tables with high numeric content, and various types of noise/gibberish text to produce clean, readable text output suitable for analysis.
+EDGARTOOL is a Python library designed to clean and process SEC EDGAR 10-K filing HTML files. It removes unnecessary HTML elements, various types of noise/gibberish text, and extract tables with high numeric content to produce clean, readable text output suitable for analysis.
 
 ## Features
 
