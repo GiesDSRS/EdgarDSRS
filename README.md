@@ -1,4 +1,9 @@
 # EDGARTOOL: Tool for SEC 10-k files
+| | |
+| --- | --- |
+| License | [![License](https://img.shields.io/badge/LICENSE-blue)](https://github.com/pratikrelekar/Edgartool/blob/main/LICENSE) |
+| Dependencies | ![PyPI - Version](https://img.shields.io/pypi/v/beautifulsoup4?label=beautifulsoup4)
+| Meta | 
 ## Description:
 
 EDGARTOOL is a Python library designed to clean and process SEC EDGAR 10-K filing HTML files. It removes unnecessary HTML elements, various types of noise/gibberish text, and extract tables with high numeric content to produce clean, readable text output suitable for analysis.
@@ -7,6 +12,7 @@ EDGARTOOL is a Python library designed to clean and process SEC EDGAR 10-K filin
 
 - HTML cleaning and text extraction
 - Removal of financial tables and numeric-heavy content
+- Extract financial tables 
 - Elimination of noisy text and gibberish
 - Unicode normalization
 - Special character handling
@@ -63,11 +69,13 @@ Main function to clean HTML content and extract text.
 text = EdgarAnalyzer.clean_html_content(html_content)
 ```
 
-### `clean_noisy_text(text)`
-Removes noisy text patterns and standardizes format.
+### `extract_and_format_tables`
+Function to extract tables.
 
-### `remove_gibberish(text)`
-Eliminates gibberish and unwanted patterns from text.
+```python
+soup = BeautifulSoup(html_content, "html.parser"
+tables = extract_and_format_tables(soup)
+```
 
 ## Contributing
 
