@@ -89,5 +89,13 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 Pratik Relekar | Xinyao Qian
 
+## Background
+
+This library was developed at [**Data Science Research Services(University of Illinois at Urbana-Champaign)**](https://dsrs.illinois.edu) in 2024 and has been under active development since then.
+
+## Getting help
+
+For general questions and discussions, visit [**DSRS mailing list**](https://dsrs.illinois.edu/about/faq).
+
 
 ## Disclaimer
