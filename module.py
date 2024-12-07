@@ -100,7 +100,7 @@ class EdgarAnalyzer:
         text = soup.get_text(separator=' ')
         text = unicodedata.normalize('NFKD', text)
 
-        # Comprehensive cleaning of formatting and metadata tags
+        # Comprehensive cleaning of metadata tags
         text = re.sub(
             r'(?i)('
             r'</?[a-z][^>]*>|'  
