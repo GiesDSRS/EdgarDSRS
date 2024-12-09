@@ -29,7 +29,6 @@ Required dependencies:
 - lxml
 - html5lib
 - unicodedata
-- xml.etree.ElementTree
 
 ## Usage
 
