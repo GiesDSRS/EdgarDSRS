@@ -72,7 +72,7 @@ text = EdgarAnalyzer.clean_html_content(html_content)
 Function to extract tables.
 
 ```python
-soup = BeautifulSoup(html_content, "html.parser"
+soup = BeautifulSoup(html_content, "html.parser")
 tables = extract_and_format_tables(soup)
 ```
 
