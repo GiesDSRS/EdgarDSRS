@@ -1,4 +1,4 @@
-from edgaranalyzer import EdgarAnalyzer
+from edgardsrs import EdgarDSRS
 
 analyzer = EdgarAnalyzer()
 
