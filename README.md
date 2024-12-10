@@ -1,4 +1,4 @@
-# EDGARANALYZER: Tool for SEC 10-k files
+# EDGARDSRS: Tool for SEC 10-k files
 | | |
 | --- | --- |
 | License | [![License](https://img.shields.io/badge/LICENSE-blue)](https://github.com/pratikrelekar/Edgartool/blob/main/LICENSE) |
@@ -6,7 +6,7 @@
 | Meta | 
 ## Description:
 
-EDGARANALYZER is a Python library designed to clean and process SEC EDGAR 10-K filing HTML files. It removes unnecessary HTML elements, various types of noise/gibberish text, and extract tables with high numeric content to produce clean, readable text output suitable for analysis.
+EDGARDSRS is a Python library designed to clean and process SEC EDGAR 10-K filing HTML files. It removes unnecessary HTML elements, various types of noise/gibberish text, and extract tables with high numeric content to produce clean, readable text output suitable for analysis.
 
 ## Features
 
@@ -21,7 +21,7 @@ EDGARANALYZER is a Python library designed to clean and process SEC EDGAR 10-K f
 ## Installation
 
 ```bash
-pip install edgaranalyzer
+pip install edgardsrs
 ```
 
 Required dependencies:
@@ -35,9 +35,9 @@ Required dependencies:
 Basic usage to clean a 10-K HTML file:
 
 ```python
-from edgaranalyzer import EdgarAnalyzer
+from edgardsrs import EdgarDSRS
 
-analyzer = EdgarAnalyzer()
+analyzer = EdgarDSRS()
 
 # Cleaning the file
 input_file = "your_10k_file.html"
@@ -65,7 +65,7 @@ The tool performs the following cleaning operations:
 Main function to clean HTML content and extract text.
 
 ```python
-text = EdgarAnalyzer.clean_html_content(html_content)
+text = EdgarDSRS.clean_html_content(html_content)
 ```
 
 ### `extract_and_format_tables`
@@ -95,6 +95,3 @@ This library was developed at [**Data Science Research Services(University of Il
 ## Getting help
 
 For general questions and discussions, visit [**DSRS mailing list**](https://dsrs.illinois.edu/about/faq).
-
-
-## Disclaimer
