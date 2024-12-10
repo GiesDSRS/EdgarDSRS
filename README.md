@@ -1,4 +1,4 @@
-# EDGARTOOL: Tool for SEC 10-k files
+# EDGARANALYZER: Tool for SEC 10-k files
 | | |
 | --- | --- |
 | License | [![License](https://img.shields.io/badge/LICENSE-blue)](https://github.com/pratikrelekar/Edgartool/blob/main/LICENSE) |
@@ -6,7 +6,7 @@
 | Meta | 
 ## Description:
 
-EDGARTOOL is a Python library designed to clean and process SEC EDGAR 10-K filing HTML files. It removes unnecessary HTML elements, various types of noise/gibberish text, and extract tables with high numeric content to produce clean, readable text output suitable for analysis.
+EDGARANALYZER is a Python library designed to clean and process SEC EDGAR 10-K filing HTML files. It removes unnecessary HTML elements, various types of noise/gibberish text, and extract tables with high numeric content to produce clean, readable text output suitable for analysis.
 
 ## Features
 
@@ -35,7 +35,7 @@ Required dependencies:
 Basic usage to clean a 10-K HTML file:
 
 ```python
-from edgartool import EdgarAnalyzer
+from edgaranalyzer import EdgarAnalyzer
 
 analyzer = EdgarAnalyzer()
 
