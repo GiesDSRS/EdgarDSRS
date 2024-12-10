@@ -4,7 +4,7 @@ import unicodedata
 from bs4 import BeautifulSoup
 import logging
 
-class EdgarAnalyzer:
+class EdgarDSRS:
     def __init__(self):
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
