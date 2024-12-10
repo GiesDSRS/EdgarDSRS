@@ -1,4 +1,4 @@
-from edgartool import EdgarAnalyzer
+from edgaranalyzer import EdgarAnalyzer
 
 analyzer = EdgarAnalyzer()
 
