@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="edgaranalyzer",
+    name="edgardsrs",
     version="0.1.0",  # Update this with your new version
     packages=find_packages(exclude=["tests*"]),
     install_requires=[
@@ -13,7 +13,7 @@ setup(
     description="A tool for cleaning SEC EDGAR HTML files",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/pratikrelekar/Edgaranalyzer",
+    url="https://github.com/pratikrelekar/EdgarDSRS",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
