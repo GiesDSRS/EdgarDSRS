@@ -1,6 +1,6 @@
 from edgardsrs import EdgarDSRS
 
-analyzer = EdgarAnalyzer()
+analyzer = EdgarDSRS()
 
 # Cleaning the file
 input_file = "your_10k_file.html"
