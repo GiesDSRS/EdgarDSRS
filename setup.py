@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="edgardsrs",
-    version="0.1.0",  # Update this with your new version
+    version="0.1.1",  # Update this with your new version
     packages=find_packages(exclude=["tests*"]),
     install_requires=[
         'beautifulsoup4>=4.9.3',
