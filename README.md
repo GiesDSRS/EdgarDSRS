@@ -3,7 +3,7 @@
 | --- | --- |
 | License | [![License](https://img.shields.io/badge/LICENSE-blue)](https://github.com/pratikrelekar/Edgartool/blob/main/LICENSE) |
 | Dependencies | ![PyPI - Version](https://img.shields.io/pypi/v/beautifulsoup4?label=beautifulsoup4)
-| Meta | ![PyPI - Version](https://img.shields.io/pypi/v/edgardsrs)
+| Meta | [![PyPI - Version](https://img.shields.io/pypi/v/edgardsrs?label=edgardsrs)](https://pypi.org/project/edgardsrs/)
 
 ## Description:
 
