@@ -3,7 +3,8 @@
 | --- | --- |
 | License | [![License](https://img.shields.io/badge/LICENSE-blue)](https://github.com/pratikrelekar/Edgartool/blob/main/LICENSE) |
 | Dependencies | ![PyPI - Version](https://img.shields.io/pypi/v/beautifulsoup4?label=beautifulsoup4)
-| Meta | 
+| Meta | ![PyPI - Version](https://img.shields.io/pypi/v/edgardsrs)
+
 ## Description:
 
 EDGARDSRS is a Python library designed to clean and process SEC EDGAR 10-K filing HTML files. It removes unnecessary HTML elements, various types of noise/gibberish text, and extract tables with high numeric content to produce clean, readable text output suitable for analysis.
